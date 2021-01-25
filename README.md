@@ -12,6 +12,7 @@ Automatic deposits (weekly allowances) should be possible via cron jobs on the s
 ### TODO:
 * Allow parents to delete transactions
 * Maybe tri-state approvals - pending, approved, declined?
+* Warn if account is (or will be) overdrawn
 * Add a running balance total on the account.html page
 * Implement a clean mechanism for automatic/scheduled deposits
 * Perhaps break routes.py into smaller chunks
