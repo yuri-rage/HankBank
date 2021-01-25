@@ -32,6 +32,12 @@
                             Admin
                         </a>
                         {% endif %}
+                        {% if current_user.permission.value <= 1 %}
+                        <!-- permission is an Enum type - parent evaluates to 1 -->
+                        <a href="{{ url_for('main.parent') }}" class="navbar-item">
+                            Parent
+                        </a>
+                        {% endif %}
                         <a href="{{ url_for('main.account') }}" class="navbar-item">
                             Account
                         </a>

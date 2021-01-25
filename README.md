@@ -10,7 +10,8 @@ Run the init_db.py script to create a blank database in the root directory.  The
 Automatic deposits (weekly allowances) should be possible via cron jobs on the server.
 
 ### TODO:
-* Implement parental approvals (completely missing at present)
+* Allow parents to delete transactions
+* Maybe tri-state approvals - pending, approved, declined?
 * Add a running balance total on the account.html page
 * Implement a clean mechanism for automatic/scheduled deposits
 * Perhaps break routes.py into smaller chunks

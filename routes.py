@@ -24,6 +24,41 @@ def index():
     return render_template('index.html')  # TODO: maybe route this to the account or approval page if logged in
 
 
+@main.route('/parent', methods=['GET', 'POST'])
+@login_required
+def parent():
+    if current_user.permission.value <= Permissions.parent.value:
+        if request.method == 'POST':
+            user_id = request.form.get('user_id')
+        else:
+            user_id = request.args.get('user_id')
+        if not user_id:  # GET method without arguments - try passing transactions for first child user
+            try:
+                user_id = user_id if user_id else User.query.filter_by(permission=Permissions.child).first().id
+            except AttributeError:  # why you'd use this if there were no children assigned is beyond me, but you can!
+                user_id = user_id if user_id else User.query.first().id
+        transactions = Transaction.query.filter_by(
+            user_id=user_id).order_by(Transaction.date.desc())
+        return render_template('parent.html', name=current_user.name, users=User.query.all(), user_id=user_id,
+                               transactions=transactions)
+
+    else:
+        return redirect(url_for('auth.login'))  # user isn't an admin - redirect to login page
+        # TODO: maybe route back to index instead
+
+
+@main.route('/approve', methods=['POST'])
+@login_required
+def approve():
+    if current_user.permission.value <= Permissions.parent.value:
+        transaction = Transaction.query.get(request.form.get('transaction_id'))
+        transaction.approved = True
+        db.session.commit()
+        return redirect(url_for('main.parent', user_id=request.form.get('user_id')))
+    else:
+        return redirect(url_for('main.account'))
+
+
 @main.route('/admin')
 @login_required
 def admin():
@@ -31,7 +66,7 @@ def admin():
         return render_template('admin.html', name=current_user.name, users=User.query.all())
     else:
         return redirect(url_for('auth.login'))  # user isn't an admin - redirect to login page
-                                                # TODO: maybe route back to index instead
+        # TODO: maybe route back to index instead
 
 
 @main.route('/modify_user', methods=['POST'])
@@ -76,8 +111,8 @@ def modify_user():
 @login_required
 def account():
     transaction_sum = Transaction.query.with_entities(sum(Transaction.amount).label(
-        'balance')).filter(Transaction.user_id == current_user.id)  # ,
-    # Transaction.approved is True)
+        'balance')).filter(Transaction.user_id == current_user.id,
+                           Transaction.approved == True)
     balance = 0
     if transaction_sum:
         balance = transaction_sum[0][0] if transaction_sum[0][0] is not None else 0

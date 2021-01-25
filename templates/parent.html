@@ -1,0 +1,72 @@
+<!-- templates/account.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+    {{ name }}'s Approval Tasks
+</h1>
+<form method="POST" action="/parent">
+    <div class="columns is-vcentered">
+        <div class="column is-3">
+            <label class="label">Select username to approve transactions:</label>
+        </div>
+        <div class="column is-2">
+            <select class="input" name="user_id" onchange="this.form.submit()">
+                {% for user in users %}
+                <option value="{{ user.id }}" {{
+                'selected' if user.id == user_id|int() else '' }}>{{ user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+<hr/>
+
+{% if transactions %}
+<table class="table is-fullwidth is-striped">
+    <thead>
+    <tr class="th">
+        <th class="has-text-centered" colspan="7">Transaction History</th>
+    </tr>
+    <tr class="th">
+        <th class="is-primary has-text-centered">Date</th>
+        <th class="is-primary has-text-centered">Time</th>
+        <th class="is-primary has-text-centered">Amount</th>
+        <th class="is-primary has-text-centered" colspan="2">Memo</th>
+        <th class="is-primary has-text-centered">Status</th>
+        <th class="is-primary has-text-centered"></th>
+    </tr>
+    </thead>
+    {% for transaction in transactions %}
+    <tr>
+        <td class="has-text-centered">{{ transaction.date.strftime('%d %b %Y') }}</td>
+        <td class="has-text-centered">{{ transaction.date.strftime('%H:%M:%S') }}</td>
+        {% if transaction.amount < 0 %}
+        <td class="has-text-centered has-text-danger">
+            {% else %}
+        <td class="has-text-centered has-text-success">
+            {% endif %}
+            {{ transaction.amount | format_currency }}
+        </td>
+        <td colspan="2">{{ transaction.memo }}</td>
+        {% if transaction.approved %}
+        <td class="has-text-centered has-text-success">Approved</td>
+        {% else %}
+        <td class="has-text-centered has-text-warning">Pending</td>
+        {% endif %}
+        <td>
+            {% if not transaction.approved %}
+            <form method="POST" action="/approve">
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                <button class="button is-fullwidth">Approve</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}
