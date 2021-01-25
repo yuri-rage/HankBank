@@ -1,5 +1,5 @@
 """
-    helper script - run this to re-initialize the database (overwrites any existing db.sqlite)
+    helper script - run this to re-initialize the database
 """
 
 from app import db, create_app
