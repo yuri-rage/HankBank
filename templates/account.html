@@ -1,0 +1,94 @@
+<!-- templates/account.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+    Welcome, {{ name }}!
+</h1>
+<h1 class="title">
+    Your account balance is {{ balance | format_currency }}
+</h1>
+<hr/>
+<div class="columns">
+    <div class="column">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="notification {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="columns">
+            <div class="column is-6">
+                <div class="box">
+                    <form method="POST" action="/deposit">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="text" name="amount" placeholder="Deposit Amount $"
+                                       autofocus="">
+                                <input class="input" type="text" name="memo"
+                                       placeholder="Memo (purpose of transaction)">
+                            </div>
+                        </div>
+                        <button class="button is-block is-info is-fullwidth">Request Deposit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="box">
+                    <form method="POST" action="/withdraw">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="text" name="amount" placeholder="Withdrawal Amount $"
+                                       autofocus="">
+                                <input class="input" type="text" name="memo"
+                                       placeholder="Memo (purpose of transaction)">
+                            </div>
+                        </div>
+                        <button class="button is-block is-warning is-fullwidth">Request Withdrawal</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table is-fullwidth is-striped">
+    <thead>
+    <tr class="th">
+        <th class="has-text-centered" colspan="6">Transaction History</th>
+    </tr>
+    <tr class="th">
+        <th class="is-primary has-text-centered">Date</th>
+        <th class="is-primary has-text-centered">Time</th>
+        <th class="is-primary has-text-centered">Amount</th>
+        <th class="is-primary has-text-centered" colspan="2">Memo</th>
+        <th class="is-primary has-text-centered">Status</th>
+    </tr>
+    </thead>
+    {% for transaction in transactions %}
+    <tr>
+        <td class="has-text-centered">{{ transaction.date.strftime('%d %b %Y') }}</td>
+        <td class="has-text-centered">{{ transaction.date.strftime('%H:%M:%S') }}</td>
+        {% if transaction.amount < 0 %}
+        <td class="has-text-centered has-text-danger">
+            {% else %}
+        <td class="has-text-centered has-text-success">
+            {% endif %}
+            {{ transaction.amount | format_currency }}
+        </td>
+        <td colspan="2">{{ transaction.memo }}</td>
+        {% if transaction.approved %}
+        <td class="has-text-centered has-text-success">Approved</td>
+        {% else %}
+        <td class="has-text-centered has-text-warning">Pending</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

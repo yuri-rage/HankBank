@@ -1,0 +1,69 @@
+<!-- templates/account.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+    {{ name }}'s Administrator Page
+</h1>
+<hr/>
+<table class="table is-fullwidth is-striped is-hoverable">
+    <thead>
+    <tr class="th">
+        <th class="has-text-centered" colspan="6">User Actions</th>
+    </tr>
+    <tr class="th">
+        <th class="is-primary has-text-centered">User ID</th>
+        <th class="is-primary has-text-centered">Account Type</th>
+        <th class="is-primary has-text-centered">Name</th>
+        <th class="is-primary has-text-centered">Email</th>
+        <th class="is-primary has-text-centered">Password</th>
+        <th class="is-primary has-text-centered"></th>
+    </tr>
+    </thead>
+    {% for user in users %}
+    <tr>
+        <form method="POST" action="/modify_user">
+            <td>
+                <input class="input" type="text" size="1" value="{{ user.id }}" disabled>
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+            </td>
+            <td>
+                <select class="input" name="permission">
+                    <option value="0" {{
+                    'selected' if user.permission.value == 0 else '' }}>Admin</option>
+                    <option value="1" {{
+                    'selected' if user.permission.value == 1 else '' }}>Parent</option>
+                    <option value="2" {{
+                    'selected' if user.permission.value == 2 else '' }}>Child</option>
+                </select>
+            </td>
+            <td>
+                <input class="input is-fullwidth" type="text" name="name" value="{{ user.name }}">
+            </td>
+            <td>
+                <input class="input is-fullwidth" type="email" name="email" placeholder="{{ user.email }}">
+            </td>
+            <td>
+                <input class="input is-fullwidth" type="password" name="password"
+                       placeholder="Retain current password">
+            </td>
+            <td>
+                <button class="button is-fullwidth">Commit Changes for {{ user.name }}</button>
+            </td>
+        </form>
+    </tr>
+    {% endfor %}
+</table>
+<div class="column is-4 is-offset-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="notification {{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% endblock %}
