@@ -15,5 +15,6 @@ Automatic deposits (weekly allowances) should be possible via cron jobs on the s
 * Implement a clean mechanism for automatic/scheduled deposits
 * Perhaps break routes.py into smaller chunks
 * E-mail notifications?
+* Print deposit/withdrawal slips?  Maybe that's too old-fashioned...
 
 -- Yuri - Jan 2021

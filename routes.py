@@ -21,7 +21,7 @@ def format_currency(value):
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')  # TODO: maybe route this to the account or approval page if logged in
 
 
 @main.route('/admin')
@@ -31,6 +31,7 @@ def admin():
         return render_template('admin.html', name=current_user.name, users=User.query.all())
     else:
         return redirect(url_for('auth.login'))  # user isn't an admin - redirect to login page
+                                                # TODO: maybe route back to index instead
 
 
 @main.route('/modify_user', methods=['POST'])
